@@ -1,37 +1,63 @@
 import time
 import json
 from utils import get_physics
-from flask import Flask
+from flask import Flask, jsonify
 
 
-if __name__ == "__main__":
-    data = []
+app = Flask(__name__)
 
-    last = time.time()
-    first = time.time()
 
-    while True:
-        if time.time() - last > 0.05:
+def save_data(seconds=300, timestep=0.3):
+    res = []
+
+    start, last = time.time(), time.time()
+
+    while time.time() - start < seconds:
+        if time.time() - last >= timestep:
             physics_reading = get_physics()
-            print(f"\r{physics_reading.Heading}", end='', flush=True)
-
-            res = {
-                   "x": physics_reading.TyreContactPoint.FL.x,
-                   "y": physics_reading.TyreContactPoint.FL.y,
-                   "z": physics_reading.TyreContactPoint.FL.z,
-                   "heading": physics_reading.Heading
-                }
-
-            data.append(res)
+            res.append({
+                "x": physics_reading.TyreContactPoint.FL.x,
+                "y": physics_reading.TyreContactPoint.FL.y,
+                "z": physics_reading.TyreContactPoint.FL.z,
+                "heading": physics_reading.Heading
+            })
 
             last = time.time()
 
-        if time.time() - first > 300:
-
-            with open("data_bmw_20fps.json", "w") as f:
-                json.dump(data, f)
-
-            print("Saved File")
-            exit()
+    with open("data.json", "w") as f:
+        json.dump(res, f)
+        print("Saved file")
 
 
+@app.route("/telemetry")
+def live_data():
+    physics_reading = get_physics()
+
+    res = {
+        "x": physics_reading.TyreContactPoint.FL.x,
+        "y": physics_reading.TyreContactPoint.FL.y,
+        "z": physics_reading.TyreContactPoint.FL.z,
+        "heading": physics_reading.Heading
+    }
+    return jsonify(res)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
+class FilePlayer:
+    readings: list[int]
+    current_index: int
+
+    def get_next(self):
+        self.current_index += 1
+        return self.readings[self.current_index]
+
+    def get_at_given_index(self, index: int):
+        return self.readings[index]
+
+
+class APIPlayer:
+    def get_next(self):
+        return # api call here
