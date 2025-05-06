@@ -16,20 +16,22 @@ public class ReplayManager : MonoBehaviour
     private Reading currentReading;
     private Reading lastReading;
 
+    public bool dataFromApi = true;
 
     public DataProvider dataProvider;
 
+    private CarData cd;
 
 
     private void Awake(){
         instance = this;
+        cd = Object.FindFirstObjectByType<CarData>().GetComponent<CarData>();
     }
 
     public void Setup(){
         Debug.Log("Setting up :)");
 
-        // this.dataProvider = new FileDataProvider("data_bmw_20fps.json");
-        this.dataProvider = new APIDataProvider();
+        this.dataProvider = dataFromApi ? new APIDataProvider() : new FileDataProvider("data_bmw_20fps.json");
 
         // var x = new APIDataProvider();
 
@@ -60,6 +62,8 @@ public class ReplayManager : MonoBehaviour
         float lerpMoveRation = (timer % this.timeBetweenReadings) / this.timeBetweenReadings;
         
         this.UpdateGameObject(GameObject.Find("Car"), this.currentReading, this.lastReading, lerpMoveRation);
+
+        cd.UpdateUI(this.currentReading);
     }
 
 
