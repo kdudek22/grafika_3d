@@ -42,7 +42,7 @@ public class APIDataProvider: DataProvider{
     public HttpClient httpClient;
 
     // Time between api calls
-    private int sleepAmount = 300;
+    private int sleepAmount = 3;
 
     public APIDataProvider(){
         this.httpClient = new HttpClient();
