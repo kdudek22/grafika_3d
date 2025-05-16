@@ -11,7 +11,7 @@ public class CameraFollow : MonoBehaviour
         if (target != null)
         {
             // Calculate the desired position
-            Vector3 desiredPosition = new Vector3(target.position.x + 50f, target.position.y + height, target.position.z);
+            Vector3 desiredPosition = new Vector3(target.position.x, target.position.y + height, target.position.z);
 
             // Smoothly interpolate the camera's position towards the desired position
             transform.position = Vector3.Lerp(transform.position, desiredPosition, followSpeed * Time.deltaTime);
