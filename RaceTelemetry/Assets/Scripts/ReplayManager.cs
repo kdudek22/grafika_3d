@@ -20,22 +20,25 @@ public class ReplayManager : MonoBehaviour
 
     public DataProvider dataProvider;
 
-    private CarData cd;
+    private UIInteractor uiInteractor;
 
 
     private void Awake(){
+        Debug.Log(this);
         instance = this;
-        cd = Object.FindFirstObjectByType<CarData>().GetComponent<CarData>();
     }
 
     public void Setup(){
         Debug.Log("Setting up :)");
 
-        this.dataProvider = dataFromApi ? new APIDataProvider() : new FileDataProvider("data_bmw_20fps.json");
+        this.dataProvider = dataFromApi ? new APIDataProvider() : new FileDataProvider("bmw_more_fields.json");
 
         // var x = new APIDataProvider();
 
+        this.uiInteractor = UIInteractor.instance;
+
         this.setupFinished = true;
+
     }
 
     public void Update(){
@@ -51,6 +54,9 @@ public class ReplayManager : MonoBehaviour
             this.currentReadingIndex = (this.currentReadingIndex + 1);
             this.lastReading = this.currentReading;
             this.currentReading = this.dataProvider.GetReading(this.currentReadingIndex);
+
+            uiInteractor.UpdateUI(this.currentReading);
+
             this.timer = 0f;
         }
 
@@ -63,7 +69,6 @@ public class ReplayManager : MonoBehaviour
         
         this.UpdateGameObject(GameObject.Find("Car"), this.currentReading, this.lastReading, lerpMoveRation);
 
-        cd.UpdateUI(this.currentReading);
     }
 
 
