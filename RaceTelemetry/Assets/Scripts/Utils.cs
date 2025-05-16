@@ -13,3 +13,8 @@ public enum PlayType{
     File,
     Live,
 }
+
+public enum CameraType{
+    Free,
+    Follow,
+}
