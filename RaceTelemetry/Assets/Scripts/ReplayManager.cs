@@ -61,7 +61,8 @@ public class ReplayManager : MonoBehaviour
         }
 
         // This is to make sure that we have the prevoius reading, as the movement calculations require 2 readings
-        if(this.lastReading == null){
+        if (this.lastReading == null)
+        {
             return;
         }
 

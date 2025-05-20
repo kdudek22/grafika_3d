@@ -37,8 +37,8 @@ public class UIInteractor : MonoBehaviour
         Label gear = root.Q<Label>("Gear");
         Label rpm = root.Q<Label>("RPM");
 
-        speed.text = reading.speed.ToString();
-        gear.text = reading.gear.ToString();
-        rpm.text = reading.rmp.ToString();
+        speed.text = "Speed: " + reading.speed.ToString();
+        gear.text = "Gear: " + reading.gear.ToString();
+        rpm.text = "RPM: " + reading.rmp.ToString();
     }
 }
