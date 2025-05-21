@@ -1,22 +1,37 @@
-public class Reading{
+public class Reading {
     public float x;
     public float y;
     public float z;
     public float heading;
+    public float pitch;
     public int gear;
-    public int rmp;
-    public float speed; 
+    public int rpm;
+    public float steer_angle;
+    public float gas;
+    public float brake;
+    public float speed;
+    public string current_time;
 }
 
-public enum PlayType{
+public enum PlayType
+{
     File,
     Live,
+}
+
+public enum ReplayState
+{
+    Idle,
+    Starting,
+    Playing,
+    Paused,
 }
 
 public enum CameraType
 {
     Free,
-    Follow,
+    FollowBirdsEye,
+    FollowClose,
     LockedInPlace,
 }
 

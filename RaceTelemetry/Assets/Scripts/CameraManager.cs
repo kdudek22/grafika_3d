@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class CameraManager : MonoBehaviour
 {
 
-    private CameraType cameraType = CameraType.Follow;
+    private CameraType cameraType = CameraType.FollowClose;
     public Transform target;    // The target GameObject to follow
     public float height = 100f; // Height of the camera above the target
     public float followSpeed = 5f; // Speed at which the camera follows
@@ -38,7 +38,7 @@ public class CameraManager : MonoBehaviour
         // This is a simple way to switch bettwen the Free and Follow types in the gui
         if (Input.GetKey(KeyCode.Space) && Time.time >= lastTimeCameraChange + cameraTypeChangeCooldown)
         {
-            cameraType = cameraType == CameraType.Free ? CameraType.Follow : CameraType.Free;
+            cameraType = cameraType == CameraType.Free ? CameraType.FollowBirdsEye : CameraType.Free;
             lastTimeCameraChange = Time.time;
         }
 
@@ -46,11 +46,15 @@ public class CameraManager : MonoBehaviour
         {
             FreeCameraUpdate();
         }
-        else if (cameraType == CameraType.Follow)
+        else if (cameraType == CameraType.FollowClose)
         {
-            FollowCameraUpdate();
+            FollowCloseCameraUpdate();
         }
-        else if(cameraType == CameraType.LockedInPlace)
+        else if (cameraType == CameraType.FollowBirdsEye)
+        {
+            FollowCameraBirdsEyeViewUpdate();
+        }
+        else if (cameraType == CameraType.LockedInPlace)
         {
             // Nothing really happens here, as there is no handling when the camera is locked in place :)
         }
@@ -93,8 +97,7 @@ public class CameraManager : MonoBehaviour
         transform.position += move.normalized * speed * Time.deltaTime;
     }
 
-
-    public void FollowCameraUpdate()
+    public void FollowCameraBirdsEyeViewUpdate()
     {
         // Calculate the desired position
         Vector3 desiredPosition = new Vector3(target.position.x, target.position.y + height, target.position.z);
@@ -104,6 +107,20 @@ public class CameraManager : MonoBehaviour
 
         // Make the camera look straight down at the target
         transform.rotation = Quaternion.Euler(90f, 0f, 0f); // Directly looking straight down
+    }
+
+    public void FollowCloseCameraUpdate()
+    {
+        float followSpeed = 5f;
+        float rotationSpeed = 5f;
+        float distanceBehind = 5f;
+        float heightOffset = 2f;
+
+        Vector3 offset = -target.forward * distanceBehind + Vector3.up * heightOffset;
+        Vector3 desiredPosition = target.position + offset;
+        transform.position = Vector3.Lerp(transform.position, desiredPosition, followSpeed * Time.deltaTime);
+
+        transform.rotation = Quaternion.Lerp(transform.rotation, target.rotation, rotationSpeed * Time.deltaTime);
     }
 
     public void UpdateCameraType(CameraType newCameraType)

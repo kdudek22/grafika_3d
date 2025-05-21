@@ -39,6 +39,6 @@ public class UIInteractor : MonoBehaviour
 
         speed.text = "Speed: " + reading.speed.ToString();
         gear.text = "Gear: " + reading.gear.ToString();
-        rpm.text = "RPM: " + reading.rmp.ToString();
+        rpm.text = "RPM: " + reading.rpm.ToString();
     }
 }

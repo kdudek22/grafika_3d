@@ -29,7 +29,7 @@ public class FileDataProvider: DataProvider{
 
     public static List<Reading> GetReadingsFromFile(string fileName){
         Debug.Log("Reading from file " + fileName);
-        string path = Path.Combine(Application.dataPath, fileName);
+        string path = Path.Combine(Application.dataPath, "ReplayData", fileName);
 
         string jsonString = File.ReadAllText(path);
         return JsonConvert.DeserializeObject<List<Reading>>(jsonString);
