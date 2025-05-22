@@ -65,7 +65,7 @@ class SPageFilePhysics(ctypes.Structure):
         ("SteerAngle", ctypes.c_float),
         ("SpeedKmh", ctypes.c_float),
 
-        ("velocity", Vector3),
+        ("Velocity", Vector3),
         ("AccG", Vector3),
         ("WheelSlip", Reading4),
         ("WheelLoad", Reading4),

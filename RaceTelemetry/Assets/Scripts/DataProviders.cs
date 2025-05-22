@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using Newtonsoft.Json;
 using UnityEngine;
 using System.IO;
@@ -7,6 +8,12 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Net.Http;
+using Newtonsoft.Json;
+using UnityEngine;
 
 
 public interface DataProvider{
@@ -29,45 +36,68 @@ public class FileDataProvider: DataProvider{
 
     public static List<Reading> GetReadingsFromFile(string fileName){
         Debug.Log("Reading from file " + fileName);
-        string path = Path.Combine(Application.dataPath, fileName);
+        string path = Path.Combine(Application.dataPath, "ReplayData", fileName);
 
         string jsonString = File.ReadAllText(path);
         return JsonConvert.DeserializeObject<List<Reading>>(jsonString);
     }
 }
 
-public class APIDataProvider: DataProvider{
+public class APIDataProvider : MonoBehaviour, DataProvider
+{
     public List<Reading> readings = new List<Reading>();
+    private HttpClient httpClient;
+    private float sleepAmount = 5f;
 
-    public HttpClient httpClient;
-
-    // Time between api calls
-    private int sleepAmount = 3;
-
-    public APIDataProvider(){
-        this.httpClient = new HttpClient();
-
-        // Start to poll the api
-        Task.Run(() => PollAPI());
+    private void Start()
+    {
+        httpClient = new HttpClient();
+        httpClient.Timeout = TimeSpan.FromSeconds(5);
+        StartCoroutine(PollAPI());
     }
 
-    private async Task PollAPI(){
-        while(true){
+    private IEnumerator PollAPI()
+    {
+        while (true)
+        {
             Debug.Log("Sending a request");
-            var response = await httpClient.GetAsync("http://127.0.0.1:5000/telemetry");
-            if(response.IsSuccessStatusCode){
-                string data = await response.Content.ReadAsStringAsync();
 
-                Reading reading = JsonConvert.DeserializeObject<Reading>(data);
+            Task<HttpResponseMessage> requestTask = httpClient.GetAsync("http://127.0.0.1:5000/telemetry");
+            yield return new WaitUntil(() => requestTask.IsCompleted);
 
-                this.readings.Add(reading);
+            if (requestTask.IsFaulted)
+            {
+                Debug.LogError($"HTTP request failed: {requestTask.Exception?.GetBaseException().Message}");
+            }
+            else if (requestTask.Result.IsSuccessStatusCode)
+            {
+                Task<string> readTask = requestTask.Result.Content.ReadAsStringAsync();
+                yield return new WaitUntil(() => readTask.IsCompleted);
+
+                try
+                {
+                    Reading reading = JsonConvert.DeserializeObject<Reading>(readTask.Result);
+                    if (reading != null)
+                        readings.Add(reading);
+                    else
+                        Debug.LogWarning("Deserialized reading is null.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"JSON Deserialize Error: {ex}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"HTTP error: {requestTask.Result.StatusCode}");
             }
 
-            await Task.Delay(this.sleepAmount);
+            yield return new WaitForSeconds(sleepAmount);
         }
     }
 
-    public Reading GetReading(int _){
-        return this.readings.Last();
+    public Reading GetReading(int _)
+    {
+        return readings.Count > 0 ? readings[^1] : null;
     }
 }
