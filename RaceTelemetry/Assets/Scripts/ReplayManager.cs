@@ -7,24 +7,19 @@ public class ReplayManager : MonoBehaviour
 {
     public static ReplayManager instance;
     public int currentReadingIndex = 0;
-    public List<Reading> readings = new List<Reading>();
     public float timeBetweenReadings = 0.3f;
-    public PlayType playType = PlayType.File;
+    private PlayType playType = PlayType.Live;
     private float timer = 0f;
     private ReplayState state = ReplayState.Idle;
-
     private Reading currentReading;
     private Reading lastReading;
-
-    public bool dataFromApi = true;
-
     public DataProvider dataProvider;
-
     private UIInteractor uiInteractor;
+    private float playbackSpeed = 1f;
 
 
-    private void Awake(){
-        Debug.Log(this);
+    private void Awake()
+    {
         instance = this;
     }
 
@@ -32,7 +27,7 @@ public class ReplayManager : MonoBehaviour
     {
         this.state = ReplayState.Starting;
 
-        this.dataProvider = dataFromApi ? new APIDataProvider() : new FileDataProvider("mazda_data.json");
+        this.dataProvider = playType == PlayType.File ? new FileDataProvider("mazda_data.json") : new APIDataProvider();
 
         this.uiInteractor = UIInteractor.instance;
 
@@ -42,6 +37,11 @@ public class ReplayManager : MonoBehaviour
     public void Pause()
     {
         this.state = ReplayState.Paused;
+    }
+
+    public void SetPlaybackSpeed(float playbackSpeed)
+    {
+        this.playbackSpeed = playbackSpeed;
     }
 
     public void Update()
@@ -54,9 +54,8 @@ public class ReplayManager : MonoBehaviour
         }
 
         // When the time interval is lager than the frame rate, update the index of the reading
-        if (this.timer >= this.timeBetweenReadings)
+        if (this.timer >= this.timeBetweenReadings / this.playbackSpeed)
         {
-            Debug.Log("This is still running :)");
             this.currentReadingIndex = (this.currentReadingIndex + 1);
             this.lastReading = this.currentReading;
             this.currentReading = this.dataProvider.GetReading(this.currentReadingIndex);
@@ -72,7 +71,7 @@ public class ReplayManager : MonoBehaviour
             return;
         }
 
-        float lerpMoveRation = (timer % this.timeBetweenReadings) / this.timeBetweenReadings;
+        float lerpMoveRation = (timer % (this.timeBetweenReadings / this.playbackSpeed)) / (this.timeBetweenReadings / this.playbackSpeed);
 
         this.UpdateGameObject(GameObject.Find("Car"), this.currentReading, this.lastReading, lerpMoveRation);
 
@@ -99,5 +98,4 @@ public class ReplayManager : MonoBehaviour
         obj.transform.position = Vector3.Lerp(lastPos, targetPos, moveRatio);
         obj.transform.rotation = Quaternion.Slerp(lastRot, targetRot, moveRatio);
     }
-
 }

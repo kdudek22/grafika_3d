@@ -33,6 +33,7 @@ public enum CameraType
     FollowBirdsEye,
     FollowClose,
     LockedInPlace,
+    Driver,
 }
 
 public class CameraMoveBody

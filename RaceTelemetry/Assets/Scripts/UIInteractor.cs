@@ -36,9 +36,11 @@ public class UIInteractor : MonoBehaviour
         Label speed = root.Q<Label>("Speed");
         Label gear = root.Q<Label>("Gear");
         Label rpm = root.Q<Label>("RPM");
+        Label time = root.Q<Label>("Time");
 
         speed.text = "Speed: " + reading.speed.ToString();
         gear.text = "Gear: " + reading.gear.ToString();
         rpm.text = "RPM: " + reading.rpm.ToString();
+        time.text = "Time: " + reading.current_time;
     }
 }

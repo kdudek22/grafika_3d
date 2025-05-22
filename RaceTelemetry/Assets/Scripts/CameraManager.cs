@@ -54,6 +54,10 @@ public class CameraManager : MonoBehaviour
         {
             FollowCameraBirdsEyeViewUpdate();
         }
+        else if (cameraType == CameraType.Driver)
+        {
+            DriverCameraViewUpdate();
+        }
         else if (cameraType == CameraType.LockedInPlace)
         {
             // Nothing really happens here, as there is no handling when the camera is locked in place :)
@@ -107,6 +111,12 @@ public class CameraManager : MonoBehaviour
 
         // Make the camera look straight down at the target
         transform.rotation = Quaternion.Euler(90f, 0f, 0f); // Directly looking straight down
+    }
+
+    public void DriverCameraViewUpdate()
+    {
+        transform.position = new Vector3(target.position.x, target.position.y + 0.9f, target.position.z);
+        transform.rotation = target.rotation;
     }
 
     public void FollowCloseCameraUpdate()

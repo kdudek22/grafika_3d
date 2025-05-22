@@ -46,6 +46,7 @@ def save_data(seconds=300, timestep=0.05):
 
 @app.route("/telemetry")
 def live_data():
+    graphics_reading = get_graphics()
     physics_reading = get_physics()
 
     res = {
@@ -54,17 +55,19 @@ def live_data():
         "z": (physics_reading.TyreContactPoint.FL.z + physics_reading.TyreContactPoint.RR.z) / 2,
         "heading": physics_reading.Heading,
         "pitch": physics_reading.Pitch,
+        "roll": physics_reading.Roll,
         "gear": physics_reading.Gear,
         "rpm": physics_reading.Rpm,
         "steer_angle": physics_reading.SteerAngle,
         "speed": physics_reading.SpeedKmh,
         "gas": physics_reading.Gas,
-        "break": physics_reading.Break,
-        "velocity_vector": [physics_reading.Velocity.x, physics_reading.Velocity.y, physics_reading.Velocity.z]
+        "break": physics_reading.Brake,
+        "velocity_vector": [physics_reading.Velocity.x, physics_reading.Velocity.y, physics_reading.Velocity.z],
+        "current_time": graphics_reading.currentTime,
     }
     return jsonify(res)
 
 
 if __name__ == "__main__":
-    save_data()
-    # app.run(debug=True)
+    # save_data()
+    app.run(debug=True)
