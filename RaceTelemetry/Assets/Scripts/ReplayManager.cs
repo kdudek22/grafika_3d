@@ -8,7 +8,7 @@ public class ReplayManager : MonoBehaviour
     public static ReplayManager instance;
     public int currentReadingIndex = 0;
     public float timeBetweenReadings = 0.3f;
-    private PlayType playType = PlayType.Live;
+    private PlayType playType = PlayType.File;
     private float timer = 0f;
     private ReplayState state = ReplayState.Idle;
     private Reading currentReading;
