@@ -19,6 +19,7 @@ public class UIInteractor : MonoBehaviour
 
     public void UpdateUI(Reading reading)
     {
+        Debug.Log(reading);
         UIDocument doc = GetComponent<UIDocument>();
         if (doc == null)
         {
