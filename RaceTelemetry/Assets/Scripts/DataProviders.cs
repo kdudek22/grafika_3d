@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Newtonsoft.Json;
 using UnityEngine;
+using SocketIOClient;
 
 
 public interface DataProvider{
@@ -43,61 +44,93 @@ public class FileDataProvider: DataProvider{
     }
 }
 
-public class APIDataProvider : MonoBehaviour, DataProvider
+public class APIDataProvider : DataProvider
 {
     public List<Reading> readings = new List<Reading>();
-    private HttpClient httpClient;
-    private float sleepAmount = 5f;
 
-    private void Start()
+    public HttpClient httpClient;
+
+    // Time between api calls
+    private int sleepAmount = 3;
+
+    public APIDataProvider()
     {
-        httpClient = new HttpClient();
-        httpClient.Timeout = TimeSpan.FromSeconds(5);
-        StartCoroutine(PollAPI());
+        this.httpClient = new HttpClient();
+
+        // Start to poll the api
+        Task.Run(() => PollAPI());
     }
 
-    private IEnumerator PollAPI()
+    private async Task PollAPI()
     {
         while (true)
         {
             Debug.Log("Sending a request");
-
-            Task<HttpResponseMessage> requestTask = httpClient.GetAsync("http://127.0.0.1:5000/telemetry");
-            yield return new WaitUntil(() => requestTask.IsCompleted);
-
-            if (requestTask.IsFaulted)
+            var response = await httpClient.GetAsync("http://127.0.0.1:5000/telemetry");
+            if (response.IsSuccessStatusCode)
             {
-                Debug.LogError($"HTTP request failed: {requestTask.Exception?.GetBaseException().Message}");
-            }
-            else if (requestTask.Result.IsSuccessStatusCode)
-            {
-                Task<string> readTask = requestTask.Result.Content.ReadAsStringAsync();
-                yield return new WaitUntil(() => readTask.IsCompleted);
+                string data = await response.Content.ReadAsStringAsync();
 
-                try
-                {
-                    Reading reading = JsonConvert.DeserializeObject<Reading>(readTask.Result);
-                    if (reading != null)
-                        readings.Add(reading);
-                    else
-                        Debug.LogWarning("Deserialized reading is null.");
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"JSON Deserialize Error: {ex}");
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"HTTP error: {requestTask.Result.StatusCode}");
+                Reading reading = JsonConvert.DeserializeObject<Reading>(data);
+
+                this.readings.Add(reading);
             }
 
-            yield return new WaitForSeconds(sleepAmount);
+            await Task.Delay(this.sleepAmount);
         }
     }
 
     public Reading GetReading(int _)
     {
-        return readings.Count > 0 ? readings[^1] : null;
+        return this.readings.Last();
+    }
+}
+
+public class SocketIODataProvider : DataProvider
+{
+    public List<Reading> readings = new List<Reading>();
+
+    private SocketIOUnity socket;
+
+    public SocketIODataProvider()
+    {
+        var uri = new System.Uri("http://127.0.0.1:5000");
+        socket = new SocketIOUnity(uri, new SocketIOOptions
+        {
+            Query = new Dictionary<string, string> { },
+            Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
+        });
+
+        socket.OnConnected += (sender, e) =>
+        {
+            Debug.Log("SocketIO connected.");
+        };
+
+        socket.OnDisconnected += (sender, e) =>
+        {
+            Debug.Log("SocketIO disconnected.");
+        };
+
+        socket.On("telemetry", response =>
+        {
+            try
+            {
+                string json = response.GetValue().ToString();
+                Reading reading = JsonConvert.DeserializeObject<Reading>(json);
+                readings.Add(reading);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning("Error parsing telemetry: " + ex.Message);
+            }
+        });
+
+        socket.Connect();
+        Debug.Log("Finished the setup");
+    }
+
+    public Reading GetReading(int _)
+    {
+        return readings.Count > 0 ? readings[readings.Count - 1] : null;
     }
 }

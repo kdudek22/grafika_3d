@@ -1,11 +1,11 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <engine:VisualElement name="Container" style="flex-grow: 1; flex-direction: column;">
         <engine:VisualElement name="GameContainer" style="flex-grow: 1;" />
-        <engine:VisualElement name="UIContainer" style="height: 15%; opacity: 0.5; background-color: rgb(0, 0, 0); padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px; flex-direction: row; justify-content: space-around; align-items: center; color: rgb(15, 15, 15);">
-            <engine:Label text="Speed" name="Speed" style="background-color: rgba(231, 58, 58, 0); opacity: 1; font-size: 25px; color: rgb(255, 255, 255); min-width: 300px; -unity-text-outline-width: 7px; -unity-font-style: bold; text-shadow: 16px 16px 0 rgba(0, 0, 0, 0);" />
-            <engine:Label text="Gear" name="Gear" style="font-size: 25px; color: rgb(255, 255, 255); min-width: 300px; -unity-text-outline-width: 7px; -unity-font-style: bold;" />
-            <engine:Label text="RPM" name="RPM" style="font-size: 25px; color: rgb(255, 255, 255); min-width: 300px; -unity-text-outline-width: 7px; -unity-font-style: bold;" />
-            <engine:Label text="Time" name="Time" style="color: rgb(255, 255, 255); font-size: 25px; -unity-text-outline-width: 7px; -unity-font-style: bold;" />
+        <engine:VisualElement name="UIContainer" style="height: 15%; opacity: 0.77; background-color: rgb(0, 0, 0); padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px; flex-direction: row; justify-content: space-around; align-items: center;">
+            <engine:Label text="Speed" name="Speed" style="background-color: rgba(231, 58, 58, 0); opacity: 1; font-size: 20px; color: rgb(255, 255, 255); min-width: 300px;" />
+            <engine:Label text="Gear" name="Gear" style="font-size: 20px; color: rgb(255, 255, 255); min-width: 300px; -unity-font-style: bold;" />
+            <engine:Label text="RPM" name="RPM" style="font-size: 20px; color: rgb(255, 255, 255); min-width: 300px;" />
+            <engine:Label text="Time" name="Time" style="color: rgb(255, 255, 255); font-size: 20px;" />
         </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>

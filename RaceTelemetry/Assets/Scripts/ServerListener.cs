@@ -14,13 +14,13 @@ public class ServerListener : MonoBehaviour
     void Start()
     {
         listener = new HttpListener();
-        listener.Prefixes.Add("http://localhost:8080/");
+        listener.Prefixes.Add("http://localhost:8095/");
         listener.Start();
 
         listenerThread = new Thread(HandleIncomingConnections);
         listenerThread.Start();
 
-        Debug.Log("Server started at http://localhost:8080/");
+        Debug.Log("Server started at http://localhost:8095/");
     }
 
     private void HandleIncomingConnections()

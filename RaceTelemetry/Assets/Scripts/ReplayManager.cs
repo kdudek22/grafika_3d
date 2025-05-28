@@ -27,7 +27,7 @@ public class ReplayManager : MonoBehaviour
     {
         this.state = ReplayState.Starting;
 
-        this.dataProvider = playType == PlayType.File ? new FileDataProvider("mazda_data.json") : new APIDataProvider();
+        this.dataProvider = new SocketIODataProvider(); // playType == PlayType.File ? new FileDataProvider("mazda_data.json") : new APIDataProvider();
 
         this.uiInteractor = UIInteractor.instance;
 
@@ -60,6 +60,7 @@ public class ReplayManager : MonoBehaviour
             this.lastReading = this.currentReading;
             this.currentReading = this.dataProvider.GetReading(this.currentReadingIndex);
 
+
             uiInteractor.UpdateUI(this.currentReading);
 
             this.timer = 0f;
@@ -68,6 +69,7 @@ public class ReplayManager : MonoBehaviour
         // This is to make sure that we have the prevoius reading, as the movement calculations require 2 readings
         if (this.lastReading == null)
         {
+            Debug.Log("Reading is null");
             return;
         }
 

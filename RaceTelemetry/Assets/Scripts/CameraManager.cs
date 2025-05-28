@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class CameraManager : MonoBehaviour
 {
 
-    private CameraType cameraType = CameraType.FollowClose;
+    private CameraType cameraType = CameraType.FollowBirdsEye;
     public Transform target;    // The target GameObject to follow
     public float height = 100f; // Height of the camera above the target
     public float followSpeed = 5f; // Speed at which the camera follows
@@ -115,7 +115,7 @@ public class CameraManager : MonoBehaviour
 
     public void DriverCameraViewUpdate()
     {
-        transform.position = new Vector3(target.position.x, target.position.y + 0.9f, target.position.z);
+        transform.position = new Vector3(target.position.x, target.position.y + 1.1f, target.position.z);
         transform.rotation = target.rotation;
     }
 
